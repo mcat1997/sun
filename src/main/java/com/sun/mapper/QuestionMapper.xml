@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sun.mapper.QuestionMapper">
+    <resultMap id="BaseResultMap" type="com.sun.entity.Question">
+        <result column="id" property="id" jdbcType="INTEGER"/>
+        <result column="questionnaire_id" property="questionnaireId" jdbcType="INTEGER"/>
+        <result column="serial_number" property="serialNumber" jdbcType="INTEGER"/>
+        <result column="type" property="type" jdbcType="INTEGER"/>
+        <result column="question_title" property="questionTitle" jdbcType="VARCHAR"/>
+        <result column="answer_style" property="answerStyle" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+                id, questionnaire_id, serial_number, type, question_title, answer_style, create_time, update_time
+    </sql>
+
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM question
+    </select>
+
+    <insert id="insertOne" parameterType="com.sun.entity.Question">
+        insert ignore into question(questionnaire_id, serial_number, type, question_title, answer_style)
+        VALUES (#{question.questionnaireId, jdbcType=INTEGER},
+                #{question.serialNumber, jdbcType=INTEGER},
+                #{question.type, jdbcType=INTEGER},
+                #{question.questionTitle, jdbcType=VARCHAR},
+                #{question.answerStyle, jdbcType=VARCHAR})
+    </insert>
+
+    <insert id="insertList">
+        insert ignore into question(questionnaire_id, serial_number, type, question_title, answer_style)
+        VALUES
+        <foreach collection="questions" item="question" separator=",">
+            (#{question.questionnaireId, jdbcType=INTEGER},
+            #{question.serialNumber, jdbcType=INTEGER},
+            #{question.type, jdbcType=INTEGER},
+            #{question.questionTitle, jdbcType=VARCHAR},
+            #{question.answerStyle, jdbcType=VARCHAR})
+        </foreach>
+    </insert>
+
+    <select id="selectMaxSerialByQuestionnaireId" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        select count(id)
+        from question
+        where questionnaire_id = #{questionnaireId, jdbcType=INTEGER}
+    </select>
+
+    <select id="selectByQuestionnaireId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        FROM question
+        where questionnaire_id = #{questionnaireId, jdbcType=INTEGER}
+    </select>
+
+</mapper>

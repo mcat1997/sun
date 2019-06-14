@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sun.mapper.AccountMapper">
+    <resultMap id="BaseResultMap" type="com.sun.entity.Account">
+        <result column="id" property="id" jdbcType="INTEGER"/>
+        <result column="account_name" property="accountName" jdbcType="VARCHAR"/>
+        <result column="account_pwd" property="accountPwd" jdbcType="VARCHAR"/>
+        <result column="role" property="role" jdbcType="TINYINT"/>
+        <result column="is_banded" property="isBanded" jdbcType="TINYINT"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, account_name, account_pwd, role, is_banded, create_time, update_time
+    </sql>
+
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM account
+    </select>
+
+    <select id="selectNumByRole" resultType="java.lang.Integer">
+        SELECT count(id)
+        FROM account
+        WHERE
+        <choose>
+            <when test="role !=null">
+                role =#{role, jdbcType=TINYINT}
+            </when>
+            <otherwise>
+                0
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="selectAllByRole" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM account
+        WHERE
+        <choose>
+            <when test="role !=null">
+                role =#{role, jdbcType=TINYINT}
+            </when>
+            <otherwise>
+                0
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="selectByAccountName" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        FROM account
+        where
+        <choose>
+            <when test="accountName !=null and accountName != '' ">
+                account_name=#{accountName, jdbcType=VARCHAR}
+            </when>
+            <otherwise>
+                0
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="selectPwdByAccountName" resultType="java.lang.String" parameterType="java.lang.String">
+        select
+        account_pwd
+        from account
+        where
+        <choose>
+            <when test="accountName !=null and accountName != '' ">
+                account_name=#{accountName, jdbcType=VARCHAR}
+            </when>
+            <otherwise>
+                0
+            </otherwise>
+        </choose>
+    </select>
+
+    <insert id="insertAccount" parameterType="com.sun.entity.Account">
+        insert ignore into
+            account(account_name, account_pwd, role, is_banded)
+        values ( #{account.accountName, jdbcType=VARCHAR},
+                 #{account.accountPwd, jdbcType=VARCHAR},
+                 #{account.role, jdbcType=INTEGER},
+                 #{account.isBanded, jdbcType=BOOLEAN})
+    </insert>
+
+    <update id="updatePwdByAccountName">
+        update account
+        set account_pwd=#{accountPwd,jdbcType=VARCHAR}
+        where account_name = #{accountName, jdbcType=VARCHAR};
+    </update>
+
+    <update id="updateBandedById">
+        update account
+        set is_banded=#{isBanded, jdbcType=TINYINT}
+        where id = #{id, jdbcType=INTEGER}
+    </update>
+
+</mapper>
